@@ -5,17 +5,27 @@ import pandas as pd
 st.set_page_config(page_title="Travel Genie", page_icon="🧞")
 
 # 2. LOAD YOUR DATA
-# This looks for the files you just uploaded to GitHub
 @st.cache_data
 def load_data():
-    hotels = pd.read_csv("hotel_details.csv")
-    places = pd.read_csv("Top Indian Places to Visit.csv")
-    # Basic cleaning
-    hotels['Place'] = hotels['Place'].str.lower()
-    places['City'] = places['City'].str.lower()
+    # MOCK HOTEL DATA
+    hotel_data = {
+        'Hotel Name': ['Taj Palace', 'The Oberoi', 'FabHotel Prime'],
+        'Rating': [9.5, 9.2, 7.5],
+        'Place': ['delhi', 'bangalore', 'mumbai'],
+        'Condition': ['Exceptional', 'Excellent', 'Good']
+    }
+    
+    # MOCK PLACES DATA
+    places_data = {
+        'Name': ['Red Fort', 'Lalbagh Garden', 'Gateway of India'],
+        'City': ['delhi', 'bangalore', 'mumbai'],
+        'Type': ['Historical', 'Nature', 'Historical'],
+        'time needed to visit in hrs': [3.0, 2.0, 1.5]
+    }
+    
+    hotels = pd.DataFrame(hotel_data)
+    places = pd.DataFrame(places_data)
     return hotels, places
-
-hotel_df, places_df = load_data()
 
 # 3. INTERFACE
 st.title("🧞 Travel Genie: AI Business Travel Architect")
