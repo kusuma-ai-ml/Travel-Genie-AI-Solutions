@@ -6,33 +6,33 @@ import google.generativeai as genai
 st.set_page_config(page_title="Travel Genie AI", page_icon="🧞", layout="wide")
 
 # --- 2. SECURITY: API SETUP ---
-# Fetches your key safely from Streamlit Secrets
+# Securely fetching from Streamlit Secrets
 try:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
     model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception:
     st.error("API Key not found. Please add GEMINI_API_KEY to Streamlit Secrets.")
 
-# --- 3. DATA LOADING (WITH MOCK DATA FALLBACK) ---
+# --- 3. DATA LOADING ---
 @st.cache_data
 def load_data():
     try:
-        # Tries to load your real CSVs if they exist on GitHub
+        # Tries to load your real CSVs from GitHub
         hotels = pd.read_csv("hotel_details.csv")
-        places = pd.read_csv("Top Indian Places to Visit.csv")
+        # Cleaning the 'Place' column for easier matching
         hotels['Place'] = hotels['Place'].str.lower()
-        return hotels, places
+        return hotels
     except Exception:
-        # Fallback Mock Data so the app never crashes for recruiters
+        # Fallback Mock Data so the app stays live if CSV is missing
         hotel_data = {
             'Hotel Name': ['Taj Palace', 'The Oberoi', 'FabHotel Prime'],
             'Rating': [9.5, 9.2, 7.5],
             'Place': ['delhi', 'bangalore', 'mumbai'],
             'Condition': ['Exceptional', 'Excellent', 'Good']
         }
-        return pd.DataFrame(hotel_data), None
+        return pd.DataFrame(hotel_data)
 
-hotel_df, _ = load_data()
+hotel_df = load_data()
 
 # --- 4. AI GENERATOR FUNCTION ---
 def get_ai_itinerary(city, days, interests):
@@ -51,27 +51,27 @@ st.markdown("---")
 
 with st.sidebar:
     st.header("Trip Configuration")
-    name = st.text_input("👤 Your Name", "Professional")
+    name = st.text_input("👤 Your Name", "Guest")
     dest = st.text_input("🌍 Destination City", "Bangalore")
     days = st.slider("📅 Duration (Days)", 1, 7, 3)
     interests = st.text_area("🎯 Interests", "Nature, History, Local Food")
-    st.info("This app uses a Hybrid RAG approach: AI for planning + Local Data for hotels.")
+    st.info("Hybrid AI: Gemini Plans + Local Dataset Hotels")
 
 # --- 6. EXECUTION LOGIC ---
 if st.button("Generate Professional Itinerary"):
     with st.spinner("Genie is crafting your journey..."):
-        # Create columns for a professional dashboard look
+        # Layout columns for a professional dashboard look
         col1, col2 = st.columns([2, 1])
         
         with col1:
             st.subheader(f"📍 {days}-Day Plan for {dest.title()}")
-            # Call Gemini AI
+            # Call Gemini AI using the variables from the sidebar
             itinerary = get_ai_itinerary(dest, days, interests)
             st.markdown(itinerary)
             
         with col2:
             st.subheader("🏨 Accommodation")
-            # Search local CSV for hotel recommendation
+            # Search local CSV/DataFrame for hotel recommendation
             filtered_h = hotel_df[hotel_df["Place"].str.contains(dest.lower(), na=False)]
             
             if not filtered_h.empty:
@@ -82,4 +82,6 @@ if st.button("Generate Professional Itinerary"):
             else:
                 st.warning("No local hotel data found for this city. Check our Indian cities database!")
 
-        st.
+        st.divider()
+        st.balloons()
+        st.caption(f"Prepared for {name} | Powered by Gemini 1.5 Flash")
