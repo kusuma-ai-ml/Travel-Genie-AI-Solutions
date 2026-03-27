@@ -14,7 +14,14 @@ def load_data():
         'Place': ['delhi', 'bangalore', 'mumbai'],
         'Condition': ['Exceptional', 'Excellent', 'Good']
     }
-    
+# --- This part calls the function and saves the result into variables the app can use ---
+hotel_df, places_df = load_data()
+
+# --- Now the rest of your app will recognize 'hotel_df' and 'places_df' ---
+
+if st.button("Generate Professional Itinerary"):
+    filtered_h = hotel_df[hotel_df["Place"].str.contains(dest, na=False)]
+    # ... the rest of your code ...
     # MOCK PLACES DATA
     places_data = {
         'Name': ['Red Fort', 'Lalbagh Garden', 'Gateway of India'],
