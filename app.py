@@ -7,22 +7,14 @@ st.set_page_config(page_title="Travel Genie", page_icon="🧞")
 # 2. LOAD YOUR DATA
 @st.cache_data
 def load_data():
-    # MOCK HOTEL DATA
+    # --- Everything below is indented 4 spaces ---
     hotel_data = {
         'Hotel Name': ['Taj Palace', 'The Oberoi', 'FabHotel Prime'],
         'Rating': [9.5, 9.2, 7.5],
         'Place': ['delhi', 'bangalore', 'mumbai'],
         'Condition': ['Exceptional', 'Excellent', 'Good']
     }
-# --- This part calls the function and saves the result into variables the app can use ---
-hotel_df, places_df = load_data()
-
-# --- Now the rest of your app will recognize 'hotel_df' and 'places_df' ---
-
-if st.button("Generate Professional Itinerary"):
-    filtered_h = hotel_df[hotel_df["Place"].str.contains(dest, na=False)]
-    # ... the rest of your code ...
-    # MOCK PLACES DATA
+    
     places_data = {
         'Name': ['Red Fort', 'Lalbagh Garden', 'Gateway of India'],
         'City': ['delhi', 'bangalore', 'mumbai'],
@@ -32,7 +24,11 @@ if st.button("Generate Professional Itinerary"):
     
     hotels = pd.DataFrame(hotel_data)
     places = pd.DataFrame(places_data)
-    return hotels, places
+    
+    return hotels, places 
+
+
+hotel_df, places_df = load_data()
 
 # 3. INTERFACE
 st.title("🧞 Travel Genie: AI Business Travel Architect")
