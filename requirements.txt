@@ -1,5 +1,3 @@
 streamlit
 pandas
-reportlab
-geopy
 google-generativeai
