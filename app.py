@@ -9,7 +9,7 @@ st.set_page_config(page_title="Travel Genie AI", page_icon="🧞", layout="wide"
 # Securely fetching from Streamlit Secrets
 try:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
+    model = genai.GenerativeModel('gemini-2.0-flash')
 except Exception:
     st.error("API Key not found. Please add GEMINI_API_KEY to Streamlit Secrets.")
 
