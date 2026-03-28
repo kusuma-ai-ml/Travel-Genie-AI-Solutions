@@ -60,28 +60,37 @@ with st.sidebar:
 # --- 6. EXECUTION LOGIC ---
 if st.button("Generate Professional Itinerary"):
     with st.spinner("Genie is crafting your journey..."):
-        # Layout columns for a professional dashboard look
+        # 1. AI Logic
+        ai_plan = get_ai_itinerary(dest, days, interests)
+        
+        # 2. Data Logic (Finding Hotels AND Places)
+        hotel_df, places_df = load_data() # Ensure load_data returns both
+        
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            st.subheader(f"📍 {days}-Day Plan for {dest.title()}")
-            # Call Gemini AI using the variables from the sidebar
-            itinerary = get_ai_itinerary(dest, days, interests)
-            st.markdown(itinerary)
+            st.markdown(f"### 📝 {days}-Day Itinerary")
+            st.write(ai_plan)
             
         with col2:
-            st.subheader("🏨 Accommodation")
-            # Search local CSV/DataFrame for hotel recommendation
-            filtered_h = hotel_df[hotel_df["Place"].str.contains(dest.lower(), na=False)]
+            st.markdown("### 🏨 Top Verified Stay")
+            # Advanced filtering
+            match = hotel_df[hotel_df["Place"].str.contains(dest.lower(), na=False)]
+            if not match.empty:
+                top_h = match.sort_values(by="Rating", ascending=False).iloc[0]
+                st.info(f"**{top_h['Hotel Name']}**\n\nRating: {top_h['Rating']} ⭐")
             
-            if not filtered_h.empty:
-                top_h = filtered_h.sort_values(by="Rating", ascending=False).iloc[0]
-                st.success(f"**Recommended:** {top_h['Hotel Name']}")
-                st.write(f"⭐ Rating: {top_h['Rating']}")
-                st.write(f"📝 Condition: {top_h['Condition']}")
-            else:
-                st.warning("No local hotel data found for this city. Check our Indian cities database!")
+            st.markdown("### 🏛️ Must-Visit Spots")
+            if places_df is not None:
+                p_match = places_df[places_df["City"].str.contains(dest.title(), na=False)]
+                if not p_match.empty:
+                    for _, row in p_match.head(3).iterrows():
+                        st.write(f"✅ {row['Name']} ({row['Type']})")
 
-        st.divider()
-        st.balloons()
-        st.caption(f"Prepared for {name} | Powered by Gemini 1.5 Flash")
+        # 3. THE "CONSULTANT" FEATURE: PDF Download
+        st.download_button(
+            label="Download Itinerary as Text File",
+            data=ai_plan,
+            file_name=f"{dest}_itinerary.txt",
+            mime="text/plain"
+        )
